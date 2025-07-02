@@ -1,0 +1,7 @@
+{
+  "id": "vps-west",
+  "ip": "YOUR_LA_SERVER_IP_HERE",
+  "region": "West",
+  "type": "routing",
+  "label": "Routelag LA"
+} 

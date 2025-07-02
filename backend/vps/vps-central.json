@@ -1,0 +1,7 @@
+{
+  "id": "vps-central",
+  "ip": "YOUR_DALLAS_SERVER_IP_HERE",
+  "region": "Central",
+  "type": "routing",
+  "label": "Routelag Dallas"
+} 

@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "module": "commonjs",
+    "lib": ["dom", "es6", "es2017"],
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "outDir": "../dist/electron",
+    "rootDir": ".",
+    "noImplicitAny": true
+  },
+  "include": ["main.ts", "preload.ts", "global.d.ts", "main.d.ts"],
+  "exclude": ["node_modules"]
+} 
+
+

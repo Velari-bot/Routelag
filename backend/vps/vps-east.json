@@ -1,0 +1,7 @@
+{
+  "id": "vps-east",
+  "ip": "YOUR_NYC_SERVER_IP_HERE",
+  "region": "East",
+  "type": "routing",
+  "label": "Routelag NYC"
+} 

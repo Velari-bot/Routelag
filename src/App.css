@@ -1,0 +1,45 @@
+/* App.css - Global styles for the Routelag application */
+
+/* Custom scrollbar styles */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #181622;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #2d2546;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a084fa;
+}
+
+/* Global focus styles */
+*:focus {
+  outline: none;
+}
+
+/* Smooth transitions */
+* {
+  transition: all 0.2s ease-in-out;
+}
+
+/* Custom selection color */
+::selection {
+  background: #a084fa;
+  color: white;
+}
+
+/* Electron-specific styles */
+body {
+  -webkit-user-select: none;
+  -webkit-app-region: drag;
+}
+
+button, input, textarea, select {
+  -webkit-app-region: no-drag;
+} 
