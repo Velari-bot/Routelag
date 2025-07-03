@@ -1,6 +1,6 @@
 {
   "id": "vps-central",
-  "ip": "YOUR_DALLAS_SERVER_IP_HERE",
+  "ip": "45.32.195.106",
   "region": "Central",
   "type": "routing",
   "label": "Routelag Dallas"

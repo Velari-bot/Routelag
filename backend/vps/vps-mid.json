@@ -1,6 +1,6 @@
 {
   "id": "vps-mid",
-  "ip": "YOUR_CHICAGO_SERVER_IP_HERE",
+  "ip": "144.202.53.250",
   "region": "Midwest",
   "type": "routing",
   "label": "Routelag Chicago"

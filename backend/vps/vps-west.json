@@ -1,6 +1,6 @@
 {
   "id": "vps-west",
-  "ip": "YOUR_LA_SERVER_IP_HERE",
+  "ip": "45.63.62.238",
   "region": "West",
   "type": "routing",
   "label": "Routelag LA"

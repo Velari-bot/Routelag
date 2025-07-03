@@ -247,6 +247,8 @@ const App: React.FC = () => {
   const [selectedGame, setSelectedGame] = useState<string>('');
   const [isOptimized, setIsOptimized] = useState(false);
   const [selectedServer, setSelectedServer] = useState<string>('');
+  const [routedIp, setRoutedIp] = useState<string>('');
+  const [routedPing, setRoutedPing] = useState<number | null>(null);
   const [showAccount, setShowAccount] = useState(false);
   const [sessionWriteError, setSessionWriteError] = useState<string | null>(null);
 
@@ -355,6 +357,8 @@ const App: React.FC = () => {
               await handleSessionWrite(selectedGame, server, ping);
               setCurrentView('monitor');
               setSelectedServer(server.id);
+              setRoutedIp(server.ip);
+              setRoutedPing(ping);
             }}
             user={user}
           />
@@ -363,6 +367,8 @@ const App: React.FC = () => {
         return (
           <PingGraph
             selectedServer={selectedServer}
+            routedIp={routedIp}
+            routedPing={routedPing}
             onBack={() => setCurrentView('routes')}
             onEndOptimization={handleEndOptimization}
           />

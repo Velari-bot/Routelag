@@ -1,6 +1,6 @@
 {
   "id": "vps-opt1",
-  "ip": "YOUR_ATLANTA_SERVER_IP_HERE",
+  "ip": "144.202.25.231",
   "region": "Southeast",
   "type": "routing",
   "label": "Routelag Atlanta"

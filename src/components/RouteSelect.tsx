@@ -42,20 +42,22 @@ const RouteSelect: React.FC<RouteSelectProps> = ({ onBack, selectedGame, onEndOp
     async function fetchServers() {
       setError(null);
       try {
-        // Only call Electron API if running in Electron
-        const isElectron = window && window.process && window.process.type;
-        let vpsList: VpsServer[] = [];
-        if (isElectron && window.electron && window.electron.pingVpsServers) {
+        // Always use Electron API if available
+        let vpsList: any[] = [];
+        if (window.electron && window.electron.pingVpsServers) {
           vpsList = await window.electron.pingVpsServers();
+          // Map backend config fields to display fields
+          setServers(vpsList.map(vps => ({
+            id: vps.id,
+            ip: vps.ip,
+            region: vps.region,
+            name: vps.label, // Use label as display name
+            location: vps.region, // Optionally show region as location
+            ping: vps.ping,
+          })));
         } else {
-          // Mock data for development (no real VPS yet)
-          vpsList = [
-            { id: 'na-east', ip: '1.1.1.1', region: 'NA-East', name: 'New York', ping: 45 },
-            { id: 'eu-west', ip: '2.2.2.2', region: 'EU-West', name: 'London', ping: 120 },
-            { id: 'asia', ip: '3.3.3.3', region: 'Asia', name: 'Singapore', ping: 210 }
-          ];
+          setServers([]); // Show empty if not in Electron
         }
-        setServers(vpsList);
       } catch (e) {
         setError('Failed to fetch or ping servers.');
       }

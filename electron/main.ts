@@ -5,7 +5,6 @@ import { exec } from 'child_process';
 import { promisify } from 'util';
 import * as isDev from 'electron-is-dev';
 import fs from 'fs';
-import ping from 'ping';
 
 // Disable hardware acceleration to prevent GPU-related crashes
 app.disableHardwareAcceleration();
@@ -91,11 +90,30 @@ app.on('activate', () => {
 
 // Helper to load all VPS configs
 function loadVpsConfigs() {
-  const vpsDir = path.join(__dirname, '../backend/vps');
+  const vpsDir = path.join(process.cwd(), 'backend/vps');
+  console.log('Loading VPS configs from:', vpsDir); // Debug log
   const files = fs.readdirSync(vpsDir).filter(f => f.endsWith('.json'));
   return files.map(f => {
     const raw = fs.readFileSync(path.join(vpsDir, f), 'utf-8');
     return JSON.parse(raw);
+  });
+}
+
+// Helper to ping a host using the system ping command (Windows compatible)
+function pingHost(host: string): Promise<{ time: number; alive: boolean }> {
+  return new Promise((resolve) => {
+    const isWin = process.platform === 'win32';
+    const cmd = isWin ? `ping -n 1 ${host}` : `ping -c 1 ${host}`;
+    exec(cmd, (error, stdout) => {
+      console.log(`Ping output for ${host}:\n${stdout}`); // Debug log
+      if (error) return resolve({ time: Infinity, alive: false });
+      // Try multiple regexes for Windows and Unix
+      let match = stdout.match(/time[=<]?(\d+)(?:ms)?/i);
+      if (!match) match = stdout.match(/time=(\d+)ms/i);
+      if (!match) match = stdout.match(/Average = (\d+)ms/i); // Windows summary
+      if (match) return resolve({ time: Number(match[1]), alive: true });
+      resolve({ time: Infinity, alive: false });
+    });
   });
 }
 
@@ -105,10 +123,10 @@ ipcMain.handle('ping-vps-list', async () => {
   const results = await Promise.all(
     vpsList.map(async vps => {
       try {
-        const res = await ping.promise.probe(vps.ip, { timeout: 2 });
+        const res = await pingHost(vps.ip);
         return {
           ...vps,
-          ping: res.time !== 'unknown' ? Number(res.time) : Infinity,
+          ping: res.time,
           status: res.alive ? 'up' : 'down',
         };
       } catch {

@@ -33,7 +33,18 @@ const VpsServerSelect: React.FC<VpsServerSelectProps> = ({ gameId, onConnected }
         // 1. Load configs
         const configs: VpsConfig[] = await (window as any).electron.pingVpsServers();
         if (isMounted) {
-          setVpsList(configs);
+          // Order: NYC (East), Chicago (Midwest), Dallas (Central), then other routing, then relays
+          const routing = configs.filter(cfg => cfg.type === 'routing');
+          const relays = configs.filter(cfg => cfg.type === 'relay');
+          // Find specific routing servers
+          const nyc = routing.find(cfg => cfg.region === 'East');
+          const chicago = routing.find(cfg => cfg.region === 'Midwest');
+          const dallas = routing.find(cfg => cfg.region === 'Central');
+          // Remove them from the rest
+          const rest = routing.filter(cfg => cfg.region !== 'East' && cfg.region !== 'Midwest' && cfg.region !== 'Central');
+          // Build ordered list
+          const ordered = [nyc, chicago, dallas, ...rest].filter(Boolean).concat(relays);
+          setVpsList(ordered as VpsConfig[]);
           setLoading(false);
         }
       } catch (e: any) {
@@ -77,7 +88,8 @@ const VpsServerSelect: React.FC<VpsServerSelectProps> = ({ gameId, onConnected }
             {vpsList.length === 0 && (
               <div className="text-blue-400 text-center py-8">No servers available.</div>
             )}
-            {vpsList.map((vps) => (
+            {/* Routing servers */}
+            {vpsList.filter(vps => vps.type === 'routing').map((vps) => (
               <div key={vps.id} className="flex items-center justify-between py-4 px-2 hover:bg-blue-50 rounded-lg transition">
                 <div>
                   <div className="font-semibold text-blue-800">{vps.label} <span className="text-xs text-blue-400">({vps.region})</span></div>
@@ -87,6 +99,28 @@ const VpsServerSelect: React.FC<VpsServerSelectProps> = ({ gameId, onConnected }
                   <span className={`font-mono text-lg ${vps.status === 'up' ? 'text-green-600' : 'text-red-400'}`}>{vps.ping !== undefined && vps.ping !== Infinity ? `${Math.round(vps.ping)} ms` : 'down'}</span>
                   <button
                     className={`px-4 py-2 rounded-lg font-semibold text-white transition-colors ${connectingId === vps.id ? 'bg-blue-300' : 'bg-gradient-to-r from-blue-400 to-blue-600 hover:from-blue-500 hover:to-blue-700'} disabled:opacity-60`}
+                    disabled={vps.status !== 'up' || connectingId === vps.id}
+                    onClick={() => handleConnect(vps)}
+                  >
+                    {connectingId === vps.id ? 'Connecting...' : 'Connect'}
+                  </button>
+                </div>
+              </div>
+            ))}
+            {/* Relay servers, visually separated */}
+            {vpsList.some(vps => vps.type === 'relay') && (
+              <div className="my-2 border-t border-blue-200" />
+            )}
+            {vpsList.filter(vps => vps.type === 'relay').map((vps) => (
+              <div key={vps.id} className="flex items-center justify-between py-4 px-2 hover:bg-purple-50 rounded-lg transition opacity-80">
+                <div>
+                  <div className="font-semibold text-purple-800">{vps.label} <span className="text-xs text-purple-400">(Relay)</span></div>
+                  <div className="text-xs text-purple-500">{vps.ip}</div>
+                </div>
+                <div className="flex items-center gap-4">
+                  <span className={`font-mono text-lg ${vps.status === 'up' ? 'text-green-600' : 'text-red-400'}`}>{vps.ping !== undefined && vps.ping !== Infinity ? `${Math.round(vps.ping)} ms` : 'down'}</span>
+                  <button
+                    className={`px-4 py-2 rounded-lg font-semibold text-white transition-colors ${connectingId === vps.id ? 'bg-purple-300' : 'bg-gradient-to-r from-purple-400 to-purple-600 hover:from-purple-500 hover:to-purple-700'} disabled:opacity-60`}
                     disabled={vps.status !== 'up' || connectingId === vps.id}
                     onClick={() => handleConnect(vps)}
                   >
